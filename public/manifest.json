@@ -1,0 +1,21 @@
+{
+  "name": "UpSkill - Learn Anything, Effortlessly",
+  "short_name": "UpSkill",
+  "description": "Convert any learning content into an engaging, gamified micro-learning experience with a sarcastic cat mascot that makes studying addictive.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f9fafb",
+  "theme_color": "#4f46e5",
+  "icons": [
+    {
+      "src": "/icon-192.txt",
+      "sizes": "192x192",
+      "type": "text/plain"
+    },
+    {
+      "src": "/icon-512.txt",
+      "sizes": "512x512",
+      "type": "text/plain"
+    }
+  ]
+}
