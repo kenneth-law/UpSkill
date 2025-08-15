@@ -4,6 +4,23 @@ import { createClient } from '@supabase/supabase-js'
 import { v4 as uuidv4 } from 'uuid'
 import { createServerClient } from '@/lib/supabase/server'
 
+// Define interfaces for type safety
+interface Lesson {
+  title: string;
+  description: string;
+  concepts: any[];
+  activities: any[];
+  gameType?: string;
+  goals?: string[];
+  hardnessLevel?: string;
+  estimatedMinutes?: number;
+}
+
+interface StudyPlan {
+  totalLessons: number;
+  lessons: Lesson[];
+}
+
 // Initialize Supabase client
 const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY || ''
@@ -135,7 +152,7 @@ export async function POST(request: NextRequest) {
           topic_id: topicId,
           plan_structure: body.studyPlan,
           total_lessons: body.studyPlan.totalLessons,
-          estimated_hours: Math.ceil(body.studyPlan.lessons.reduce((total, lesson) => total + (lesson.estimatedMinutes || 0), 0) / 60)
+          estimated_hours: Math.ceil(body.studyPlan.lessons.reduce((total: number, lesson: Lesson) => total + (lesson.estimatedMinutes || 0), 0) / 60)
         });
 
       if (studyPlanError) {
@@ -144,7 +161,7 @@ export async function POST(request: NextRequest) {
       }
 
       // Insert lessons into the database
-      const lessonInserts = body.studyPlan.lessons.map((lesson, index) => ({
+      const lessonInserts = body.studyPlan.lessons.map((lesson: Lesson, index: number) => ({
         study_plan_id: studyPlanId,
         title: lesson.title,
         description: lesson.description,
@@ -191,7 +208,7 @@ export async function POST(request: NextRequest) {
         conceptExtractionResult.result.concepts?.length || 0);
     } catch (extractionError) {
       console.error('[DEBUG-SERVER] Error during concept extraction:', extractionError);
-      throw new Error(`Concept extraction failed: ${extractionError.message}`);
+      throw new Error(`Concept extraction failed: ${extractionError instanceof Error ? extractionError.message : String(extractionError)}`);
     }
 
     // Ensure conceptExtractionResult is properly initialized
@@ -235,7 +252,7 @@ export async function POST(request: NextRequest) {
         studyPlan.result.totalLessons || studyPlan.result.lessons?.length || 0);
     } catch (studyPlanError) {
       console.error('[DEBUG-SERVER] Error during study plan generation:', studyPlanError);
-      throw new Error(`Study plan generation failed: ${studyPlanError.message}`);
+      throw new Error(`Study plan generation failed: ${studyPlanError instanceof Error ? studyPlanError.message : String(studyPlanError)}`);
     }
 
     // Ensure studyPlan is properly initialized
@@ -272,7 +289,7 @@ export async function POST(request: NextRequest) {
     // Insert the study plan into the database
     console.log('[DEBUG-SERVER] Inserting study plan into database with ID:', studyPlanId);
     const totalLessons = studyPlan.result.totalLessons || studyPlan.result.lessons?.length || 0;
-    const estimatedMinutes = studyPlan.result.lessons?.reduce((total, lesson) => total + (lesson.estimatedMinutes || 0), 0) || 0;
+    const estimatedMinutes = studyPlan.result.lessons?.reduce((total: number, lesson: Lesson) => total + (lesson.estimatedMinutes || 0), 0) || 0;
     const estimatedHours = Math.ceil(estimatedMinutes / 60);
 
     console.log('[DEBUG-SERVER] Study plan details:', {
@@ -303,7 +320,7 @@ export async function POST(request: NextRequest) {
       console.log('[DEBUG-SERVER] Inserting lessons into database. Total lessons:', studyPlan.result.lessons.length);
 
       try {
-        const lessonInserts = studyPlan.result.lessons.map((lesson, index) => {
+        const lessonInserts = studyPlan.result.lessons.map((lesson: Lesson, index: number) => {
           // Log each lesson's basic structure to help identify any problematic data
           console.log(`[DEBUG-SERVER] Preparing lesson ${index + 1}:`, {
             title: lesson.title?.substring(0, 30) + '...',
@@ -342,7 +359,7 @@ export async function POST(request: NextRequest) {
         console.log('[DEBUG-SERVER] Lessons inserted successfully');
       } catch (lessonProcessingError) {
         console.error('[DEBUG-SERVER] Error processing lessons for database insertion:', lessonProcessingError);
-        throw new Error(`Failed to process lessons for database: ${lessonProcessingError.message}`);
+        throw new Error(`Failed to process lessons for database: ${lessonProcessingError instanceof Error ? lessonProcessingError.message : String(lessonProcessingError)}`);
       }
     } else {
       console.log('[DEBUG-SERVER] No lessons to insert into database');

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import OpenAI from 'openai'
 import { cookies } from 'next/headers'
-import { createClient } from '@supabase/supabase-js'
+import { createClient, Session } from '@supabase/supabase-js'
+import { createServerSupabaseClient } from '@/lib/utils/supabase-server'
 
 // Initialize OpenAI client
 const openaiApiKey = process.env.OPENAI_API_KEY
@@ -46,7 +47,7 @@ function generateChatContent(message: string, topic?: string | null, goals?: str
 }
 
 // Initialize Supabase client
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
+const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY
 
 // Only create the client if both URL and key are available
@@ -59,23 +60,11 @@ if (supabaseUrl && supabaseServiceKey) {
 export async function POST(request: NextRequest) {
   try {
     // Get the user's session from the cookie
-    let session;
+    let session: Session | undefined;
     try {
-      const cookieStore = cookies()
-      const supabaseClient = createClient(
-        supabaseUrl,
-        process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '',
-        {
-          cookies: {
-            get(name: string) {
-              return cookieStore.get(name)?.value
-            },
-          },
-        }
-      )
-
+      const supabaseClient = await createServerSupabaseClient()
       const { data } = await supabaseClient.auth.getSession()
-      session = data.session
+      session = data.session || undefined
     } catch (authError) {
       console.error('Error getting user session:', authError)
       // Continue without session, we'll handle unauthenticated users

@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -14,7 +14,8 @@ import { Slider } from '@/components/ui/slider'
 import { FileUpload } from '@/components/upload/file-upload'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 
-export default function PlanStudyPage() {
+// Client component that uses useSearchParams
+function PlanStudyContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const topicParam = searchParams.get('topic')
@@ -297,4 +298,26 @@ export default function PlanStudyPage() {
       </main>
     </ProtectedRoute>
   )
+}
+
+// Main component that wraps PlanStudyContent with Suspense
+export default function PlanStudyPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col relative">
+        <div className="absolute inset-0 w-full h-full z-0 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900"></div>
+        </div>
+        <div className="flex-1 flex items-center justify-center z-10 px-4 py-16">
+          <div className="bg-white/95 backdrop-blur-sm shadow-xl p-8 rounded-xl text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <h1 className="text-2xl font-semibold mb-2">Loading Study Planner</h1>
+            <p className="text-gray-600">Preparing your study planning tools...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <PlanStudyContent />
+    </Suspense>
+  );
 }

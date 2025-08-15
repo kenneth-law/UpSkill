@@ -182,8 +182,8 @@ export async function DELETE(request: NextRequest) {
 
     // Create a new Supabase client with the session token
     console.log('[DEBUG-DELETE] Creating authenticated Supabase client with session token')
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || ''
+    const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || ''
 
     // Create a client with the session token for authenticated access
     const dbClient = createClient(supabaseUrl, supabaseAnonKey, {

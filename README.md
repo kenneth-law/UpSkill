@@ -115,6 +115,59 @@ npm run dev
 - `npm run lint` - Run linting
 - `npm run test` - Run tests
 
+## Performance Optimization
+
+UpSkill implements several performance optimizations to reduce bandwidth usage and server-side costs:
+
+### Video Compression
+- Background videos are compressed to 720p resolution instead of 4K to significantly reduce bandwidth usage
+- The cat_720p.mp4 file is used throughout the application instead of the original 4K version
+- This optimization reduces video file sizes by approximately 70-80%
+
+### Media Caching
+- All media files (including videos) are cached with aggressive cache headers
+- Cache-Control headers are set to `public, max-age=31536000, immutable` (1 year)
+- This ensures that returning visitors don't need to download the same media files again
+- Implemented in next.config.js for all .mp4 files
+
+### Benefits
+- Reduced bandwidth costs for both server and users
+- Faster page load times, especially on mobile devices
+- Lower server-side costs for media delivery
+- Improved user experience with quicker initial page rendering
+
+## Deployment
+
+### Railway Deployment
+
+To deploy UpSkill to Railway:
+
+1. **Create a Railway account** at [railway.app](https://railway.app) if you don't have one
+
+2. **Create a new project** in the Railway dashboard
+
+3. **Connect your GitHub repository** or use the Railway CLI to deploy
+
+4. **Set up environment variables** in the Railway dashboard:
+   - `NEXT_PUBLIC_SUPABASE_URL` - Your Supabase project URL
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY` - Your Supabase anonymous key
+   - `SUPABASE_SERVICE_KEY` - Your Supabase service key
+   - `OPENAI_API_KEY` - Your OpenAI API key
+   - `NEXT_PUBLIC_APP_URL` - Your Railway app URL (e.g., https://your-app-name.railway.app)
+   - `NEXT_PUBLIC_APP_NAME` - "UpSkill" or your custom app name
+   - `NEXT_PUBLIC_DEMO_MODE` - Set to "false" for production deployment
+
+5. **Deploy your application** - Railway will automatically build and deploy your application using the configuration in `railway.json`
+
+6. **Access your deployed application** at the URL provided by Railway
+
+#### Troubleshooting Railway Deployment
+
+- **Build failures**: Check the build logs in the Railway dashboard for specific errors
+- **Runtime errors**: Check the logs in the Railway dashboard and ensure all environment variables are correctly set
+- **Database connection issues**: Verify your Supabase credentials and ensure your Supabase project allows connections from your Railway app
+- **API rate limiting**: Check if you're hitting rate limits with OpenAI or other services
+
 ## Troubleshooting
 
 ### Common Issues

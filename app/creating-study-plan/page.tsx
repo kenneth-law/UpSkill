@@ -1,13 +1,14 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion, AnimatePresence } from 'framer-motion'
-import catVideo from '@/components/media/cat_4k.mp4'
+import catVideo from '@/components/media/cat_720p.mp4'
 import { ProtectedRoute } from '@/components/auth/protected-route'
 import { useAuth } from '@/lib/auth/auth-provider'
 
-export default function CreatingStudyPlanPage() {
+// Client component that uses useSearchParams
+function StudyPlanContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const hasCalledApi = useRef(false) // Prevent duplicate API calls
@@ -531,4 +532,24 @@ export default function CreatingStudyPlanPage() {
       </main>
     </ProtectedRoute>
   )
+}
+
+// Main component that wraps StudyPlanContent with Suspense
+export default function CreatingStudyPlanPage() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-purple-900 via-indigo-800 to-blue-900 text-white p-4">
+        <div className="text-6xl mb-4">:3</div>
+        <h1 className="text-4xl md:text-6xl font-bold mb-6 text-center">Loading Study Plan</h1>
+        <div className="w-full max-w-md mb-8">
+          <div className="h-2 w-full bg-white/20 rounded-full overflow-hidden">
+            <div className="h-full bg-pink-500 rounded-full animate-pulse" style={{ width: '60%' }}></div>
+          </div>
+        </div>
+        <p className="text-xl text-center">Preparing your personalized learning experience...</p>
+      </div>
+    }>
+      <StudyPlanContent />
+    </Suspense>
+  );
 }

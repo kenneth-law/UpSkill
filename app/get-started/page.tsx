@@ -7,7 +7,7 @@ import { motion } from 'framer-motion'
 import { ArrowLeft } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import catVideo from '@/components/media/cat_4k.mp4'
+import catVideo from '@/components/media/cat_720p.mp4'
 
 export default function GetStartedPage() {
   const [topic, setTopic] = useState('')

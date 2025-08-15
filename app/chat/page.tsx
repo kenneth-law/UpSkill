@@ -1,11 +1,12 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useToast } from '@/hooks/use-toast'
 
-export default function ChatMode() {
+// Client component that uses useSearchParams
+function ChatContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { toast } = useToast()
@@ -319,4 +320,24 @@ export default function ChatMode() {
       </div>
     </div>
   )
+}
+
+// Main component that wraps ChatContent with Suspense
+export default function ChatMode() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen py-8 px-4 relative overflow-hidden">
+        <div className="absolute inset-0 bg-gradient-to-br from-purple-900 via-purple-700 to-purple-500"></div>
+        <div className="max-w-4xl mx-auto relative z-10 flex flex-col items-center justify-center h-[80vh]">
+          <div className="bg-white rounded-xl shadow-md p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600 mx-auto mb-4"></div>
+            <h1 className="text-2xl font-semibold mb-2">Loading Chat</h1>
+            <p className="text-gray-600">Preparing your chat session...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <ChatContent />
+    </Suspense>
+  );
 }

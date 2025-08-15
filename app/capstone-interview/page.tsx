@@ -1,12 +1,13 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { useToast } from '@/hooks/use-toast'
 import VoiceInterview from '@/app/components/voice-interview'
 
-export default function CapstoneInterview() {
+// Client component that uses useSearchParams
+function CapstoneInterviewContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { toast } = useToast()
@@ -348,4 +349,23 @@ export default function CapstoneInterview() {
       </div>
     </div>
   )
+}
+
+// Main component that wraps CapstoneInterviewContent with Suspense
+export default function CapstoneInterview() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen bg-gray-50 py-8 px-4">
+        <div className="max-w-4xl mx-auto flex flex-col items-center justify-center h-[80vh]">
+          <div className="bg-white rounded-xl shadow-md p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+            <h1 className="text-2xl font-semibold mb-2">Loading Interview</h1>
+            <p className="text-gray-600">Preparing your capstone interview session...</p>
+          </div>
+        </div>
+      </div>
+    }>
+      <CapstoneInterviewContent />
+    </Suspense>
+  );
 }

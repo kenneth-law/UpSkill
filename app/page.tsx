@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import styles from './styles.module.css'
-import catVideo from '@/components/media/cat_4k.mp4'
+import catVideo from '@/components/media/cat_720p.mp4'
 import { useAuth } from '@/lib/auth/auth-provider'
 
 export default function Home() {
@@ -140,7 +140,7 @@ export default function Home() {
             loop 
             muted 
             playsInline
-            className="w-full h-full object-cover extraClassCrop"
+            className="w-full h-full object-cover"
           />
           {/* Overlay to ensure text readability */}
           <div className="absolute inset-0 bg-black bg-opacity-40"></div>
