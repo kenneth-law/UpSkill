@@ -394,7 +394,7 @@ function StudyPlanContent() {
             <div className="flex flex-col items-center justify-center pb-6 px-8">
               <div className="relative h-[300px] w-[300px]">
                 <AnimatePresence>
-                  {blocks.map((block, index) => {
+                  {blocks.filter(block => block !== undefined).map((block, index) => {
                     // Calculate if this card should shake based on progress
                     const shouldShake = progress > 50 && progress < 100;
                     // Increase shake intensity as progress approaches 100%
@@ -473,10 +473,10 @@ function StudyPlanContent() {
                         }}
                       >
                         <div className="flex items-center">
-                          <span className="text-3xl mr-3">{block.emoji}</span>
+                          <span className="text-3xl mr-3">{block?.emoji}</span>
                           <div>
-                            <p className="text-lg font-bold text-white">{block.text}</p>
-                            <p className="text-sm text-white/80 mt-1">{block.description}</p>
+                            <p className="text-lg font-bold text-white">{block?.text}</p>
+                            <p className="text-sm text-white/80 mt-1">{block?.description}</p>
                           </div>
                         </div>
 

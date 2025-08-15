@@ -59,10 +59,8 @@ export function SignupForm() {
           duration: 5000,
         })
 
-        // Redirect to verification page after a short delay
-        setTimeout(() => {
-          router.push('/verify-email')
-        }, 2000)
+        // Redirect to verification page immediately
+        router.push('/verify-email')
       }
     } catch (error: any) {
       setError(error.message || 'Failed to sign up')
