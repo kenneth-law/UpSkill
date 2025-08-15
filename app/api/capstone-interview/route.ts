@@ -14,7 +14,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY
 
 // Only create the client if both URL and key are available
-let supabase
+import type { SupabaseClient } from '@supabase/supabase-js'
+let supabase: SupabaseClient | undefined
 if (supabaseUrl && supabaseServiceKey) {
   supabase = createClient(supabaseUrl, supabaseServiceKey)
 }
@@ -265,7 +266,7 @@ export async function PUT(request: NextRequest) {
     // Retrieve the game session from the database if it exists
     let gameSession;
     let systemPrompt = '';
-    
+
     if (session?.user && supabase && !sessionId.startsWith('temp-')) {
       try {
         const { data, error } = await supabase
@@ -284,10 +285,10 @@ export async function PUT(request: NextRequest) {
         }
 
         gameSession = data
-        
+
         // Extract the topic from the content
         const topic = gameSession.content?.topic || 'the subject'
-        
+
         // Create a system prompt based on the game session
         systemPrompt = `You are an expert interviewer conducting a text interview on the topic of "${topic}". 
 Your goal is to help the user synthesize and demonstrate their knowledge on this subject.

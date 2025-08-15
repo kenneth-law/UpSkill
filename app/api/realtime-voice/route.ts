@@ -14,7 +14,8 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
 const supabaseServiceKey = process.env.SUPABASE_SERVICE_KEY;
 
 // Only create the client if both URL and key are available
-let supabase;
+import type { SupabaseClient } from '@supabase/supabase-js';
+let supabase: SupabaseClient | undefined;
 if (supabaseUrl && supabaseServiceKey) {
   supabase = createClient(supabaseUrl, supabaseServiceKey);
 }
