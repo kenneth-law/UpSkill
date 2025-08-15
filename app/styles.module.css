@@ -1,0 +1,42 @@
+.container {
+  background-color: #f0f0f0;
+  padding: 20px;
+  border-radius: 8px;
+  margin: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.heading {
+  color: #333;
+  font-size: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.text {
+  color: #666;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+/* Flashcard 3D effect styles */
+.perspective500 {
+  perspective: 1000px;
+}
+
+.transformStyle3d {
+  transform-style: preserve-3d;
+}
+
+.backfaceHidden {
+  backface-visibility: hidden;
+}
+
+.rotateY180 {
+  transform: rotateY(180deg);
+}
+
+/* Flashcard flipped state */
+.flashcardFlipped {
+  transform: rotateY(180deg);
+}
