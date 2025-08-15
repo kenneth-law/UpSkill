@@ -7,10 +7,8 @@ import { createClient } from '@supabase/supabase-js'
 /**
  * API endpoint to update a topic's status
  */
-export async function PATCH(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function PATCH(request: NextRequest) {
+  const params = { id: request.nextUrl.pathname.split('/').pop() || '' }
   try {
     // Get the topic ID from the URL
     const topicId = params.id
@@ -120,10 +118,8 @@ export async function PATCH(
 /**
  * API endpoint to delete a topic
  */
-export async function DELETE(
-  request: NextRequest,
-  { params }: { params: { id: string } }
-) {
+export async function DELETE(request: NextRequest) {
+  const params = { id: request.nextUrl.pathname.split('/').pop() || '' }
   console.log('[DEBUG-DELETE] Starting DELETE request for topic:', params.id)
 
   try {
