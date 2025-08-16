@@ -160,5 +160,5 @@ if ($startNow -eq "y" -or $startNow -eq "Y") {
     npm run dev
 } else {
     Write-Host "You can start the server later with 'npm run dev'" -ForegroundColor Yellow
-    Write-Host "Or run the demo with '.\run-demo.ps1'" -ForegroundColor Yellow
+    Write-Host "Or run the demo with `.\run-demo.ps1`" -ForegroundColor Yellow
 }
