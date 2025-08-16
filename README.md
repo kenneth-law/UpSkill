@@ -49,6 +49,17 @@ UpSkill offers five engaging game modes to make learning fun and effective:
 - **Form Validation**: Zod
 - **Testing**: Jest, React Testing Library
 
+## Prerequisites
+
+Before running UpSkill, ensure you have the following prerequisites installed:
+
+1. **Node.js and npm**: 
+   - UpSkill requires Node.js (version 16.x or higher) and npm
+   - If you don't have Node.js and npm installed, you can:
+     - Download and install from [nodejs.org](https://nodejs.org/) (recommended)
+     - Run our helper script: `.\install-nodejs.ps1` which will guide you through the installation process
+   - Verify installation with: `node -v` and `npm -v`
+
 ## How to Run
 
 ### Option 1: Demo Mode (No API Keys Required)
