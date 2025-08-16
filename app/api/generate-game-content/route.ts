@@ -207,8 +207,9 @@ async function generateBoardContent(concepts: Concept[]) {
  * Generate content for the Judgement Cat game
  */
 async function generateJudgementCatContent(concepts: Concept[]) {
-  const result = await generateQuestions(concepts, ['short_answer'], 5)
-  return result.questions
+  // Import mock data instead of making API calls
+  const { mockJudgementCatQuestions } = await import('@/lib/utils/mock-data')
+  return mockJudgementCatQuestions
 }
 
 /**

@@ -439,41 +439,7 @@ export default function Home() {
               </div>
             </motion.div>
 
-            {/* Realtime API Agents Demo Card */}
-            <motion.div 
-              className="bg-white rounded-xl shadow-md overflow-hidden"
-              whileHover={{ y: -5 }}
-            >
-              <div className="aspect-video bg-indigo-50 flex items-center justify-center p-4">
-                <div className="flex flex-col items-center w-full max-w-xs">
-                  <div className="bg-white rounded-lg shadow p-3 w-full mb-3 flex items-center">
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-indigo-600 mr-2" viewBox="0 0 20 20" fill="currentColor">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd" />
-                    </svg>
-                    <span className="text-indigo-600 font-medium">Realtime API Demo</span>
-                  </div>
-                  <div className="text-center text-sm text-indigo-600">
-                    <p>Experience advanced patterns for voice agents</p>
-                  </div>
-                </div>
-              </div>
-              <div className="p-5">
-                <h3 className="text-xl font-semibold mb-2">Realtime API Agents Demo</h3>
-                <p className="text-gray-600">Try out advanced patterns for voice agents including Chat-Supervisor and Sequential Handoffs.</p>
-                <div className="mt-4 flex items-center text-sm text-indigo-600">
-                  <span className="font-medium">Perfect for:</span>
-                  <span className="ml-2">Exploring voice agent architectures</span>
-                </div>
-                <div className="mt-4">
-                  <Link 
-                    href="/realtime-demo" 
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors w-full block text-center"
-                  >
-                    Try Demo
-                  </Link>
-                </div>
-              </div>
-            </motion.div>
+
 
             {/* Get Started Card */}
             <motion.div 
