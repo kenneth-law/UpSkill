@@ -151,6 +151,17 @@ async function generateConceptsFromParameters(
     2. Write a concise but comprehensive definition
     3. Rate its importance on a scale of 1-5 (5 being most important)
 
+    Important formatting guidelines:
+    - Use proper markdown formatting in your definitions
+    - Use LaTeX for mathematical expressions and formulas, enclosed in $ for inline math and $$ for block math
+    - Examples of LaTeX usage:
+      - Inline math: $E = mc^2$
+      - Block math: $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
+      - Fractions: $\\frac{a}{b}$
+      - Square roots: $\\sqrt{x}$
+      - Subscripts and superscripts: $x_i^2$
+      - Greek letters: $\\alpha, \\beta, \\gamma, \\delta$
+
     Format your response as a JSON object with the following structure:
     {
       "concepts": [
@@ -168,7 +179,7 @@ async function generateConceptsFromParameters(
       messages: [
         {
           role: 'system',
-          content: 'You are an expert educator and curriculum designer. Extract key concepts from course information.'
+          content: 'You are an expert educator and curriculum designer. Extract key concepts from course information. Use proper markdown formatting and LaTeX for mathematical expressions and formulas. For LaTeX, use $ for inline math and $$ for block math.'
         },
         {
           role: 'user',
@@ -235,13 +246,31 @@ async function generateFlashcardsContent(concepts: Concept[]) {
     2. Provide a concise but comprehensive answer for the back
     3. Assign a category based on the concept area
 
+    Important formatting guidelines:
+    - For the front and back of the card, use proper markdown formatting
+    - When listing items, put each item on a new line with proper spacing
+    - For numbered lists, format as:
+      (1) First item
+      (2) Second item
+      (3) Third item
+    - Keep content concise but ensure proper formatting for readability
+    - Ensure paragraphs have proper spacing between them
+    - Use LaTeX for mathematical expressions and formulas, enclosed in $ for inline math and $$ for block math
+    - Examples of LaTeX usage:
+      - Inline math: $E = mc^2$
+      - Block math: $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
+      - Fractions: $\\frac{a}{b}$
+      - Square roots: $\\sqrt{x}$
+      - Subscripts and superscripts: $x_i^2$
+      - Greek letters: $\\alpha, \\beta, \\gamma, \\delta$
+
     Format your response as a JSON object with the following structure:
     {
       "flashcards": [
         {
           "id": "fc1",
           "front": "question text",
-          "back": "answer text",
+          "back": "answer text with proper formatting",
           "category": "category name"
         }
       ]
@@ -253,7 +282,7 @@ async function generateFlashcardsContent(concepts: Concept[]) {
       messages: [
         {
           role: 'system',
-          content: 'You are an expert educator and flashcard designer. Create high-quality flashcards based on concepts.'
+          content: 'You are an expert educator and flashcard designer. Create high-quality flashcards based on concepts. Use proper markdown formatting for content, especially for lists and paragraphs. Use LaTeX for mathematical expressions and formulas, enclosed in $ for inline math and $$ for block math. Keep content concise but ensure proper formatting for readability.'
         },
         {
           role: 'user',

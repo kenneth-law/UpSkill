@@ -53,7 +53,20 @@ export async function extractConcepts(
     // Truncate text if it's too long (OpenAI has token limits)
     const truncatedText = text.length > 15000 ? text.substring(0, 15000) + '...' : text
 
-    const prompt = `Return JSON only. Include 5–10 items. Your response must include a "concepts" array with objects containing "term", "definition", and "importance" fields, as well as "summary", "difficulty" (one of: "beginner", "intermediate", "advanced"), and "estimatedStudyTimeMinutes" fields at the top level.\n\nText:\n${truncatedText}`
+    const prompt = `Return JSON only. Include 5–10 items. Your response must include a "concepts" array with objects containing "term", "definition", and "importance" fields, as well as "summary", "difficulty" (one of: "beginner", "intermediate", "advanced"), and "estimatedStudyTimeMinutes" fields at the top level.
+
+Important formatting guidelines:
+- Use proper markdown formatting in your definitions and summary
+- Use LaTeX for mathematical expressions and formulas, enclosed in $ for inline math and $$ for block math
+- Examples of LaTeX usage:
+  - Inline math: $E = mc^2$
+  - Block math: $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
+  - Fractions: $\\frac{a}{b}$
+  - Square roots: $\\sqrt{x}$
+  - Subscripts and superscripts: $x_i^2$
+  - Greek letters: $\\alpha, \\beta, \\gamma, \\delta$
+
+Text:\n${truncatedText}`
 
     console.log('[DEBUG] Calling OpenAI API in extractConcepts function');
     console.log('[DEBUG] Request payload:', {
@@ -107,7 +120,7 @@ export async function extractConcepts(
       messages: [
         {
           role: 'system',
-          content: 'You are an expert educator and knowledge extractor. Extract key concepts from the user text.'
+          content: 'You are an expert educator and knowledge extractor. Extract key concepts from the user text. Use proper markdown formatting and LaTeX for mathematical expressions and formulas. For LaTeX, use $ for inline math and $$ for block math.'
         },
         {
           role: 'user',
@@ -296,6 +309,17 @@ export async function generateStudyPlan(
     Mastery depth: ${masteryDepth}/100 (higher values indicate deeper mastery)
     Study duration: ${studySpan} days
 
+    Important formatting guidelines:
+    - Use proper markdown formatting in your descriptions and goals
+    - Use LaTeX for mathematical expressions and formulas, enclosed in $ for inline math and $$ for block math
+    - Examples of LaTeX usage:
+      - Inline math: $E = mc^2$
+      - Block math: $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
+      - Fractions: $\\frac{a}{b}$
+      - Square roots: $\\sqrt{x}$
+      - Subscripts and superscripts: $x_i^2$
+      - Greek letters: $\\alpha, \\beta, \\gamma, \\delta$
+
     Create a study plan that:
     1. Groups related concepts together
     2. Presents concepts in a logical learning sequence
@@ -343,7 +367,7 @@ export async function generateStudyPlan(
     IMPORTANT NOTES:
     - You MUST use ONLY the 7 game types listed above. Do not invent new game types.
     - The "gameType" field MUST be exactly one of: "board", "judgement-cat", "adaptive-quiz", "flashcards", "capstone", "capstone_interview", or "chat".
-    - CRITICAL: EVERY lesson MUST include the "chat" game type, and the FINAL lesson MUST use "capstone_interview" instead of "capstone".
+    - CRITICAL: EVERY COURSE SHOULD START WITH THE FLASHCARD as it is the easiest, use a diverse range of lessons in between, and the FINAL lesson MUST use "capstone_interview" instead of "capstone".
     - The "hardnessLevel" field MUST be exactly one of: "beginner", "intermediate", or "advanced".
     - Ensure all JSON fields are properly formatted and match the template exactly.
     - The response MUST be valid JSON that can be parsed without errors.
@@ -371,7 +395,7 @@ export async function generateStudyPlan(
       messages: [
         {
           role: 'system',
-          content: 'You are an expert educator and learning designer. Create structured study plans based on concepts. You MUST use ONLY the 7 game types specified in the prompt: "board", "judgement-cat", "adaptive-quiz", "flashcards", "capstone", "capstone_interview", and "chat". IMPORTANT: Include "chat" in EACH lesson and use "capstone_interview" for the FINAL lesson. Your response MUST follow the exact JSON template provided, with all required fields and proper formatting.'
+          content: 'You are an expert educator and learning designer. Create structured study plans based on concepts. You MUST use ONLY the 7 game types specified in the prompt: "board", "judgement-cat", "adaptive-quiz", "flashcards", "capstone", "capstone_interview", and "chat". IMPORTANT: Include "chat" in EACH lesson and use "capstone_interview" for the FINAL lesson. Use proper markdown formatting and LaTeX for mathematical expressions and formulas. For LaTeX, use $ for inline math and $$ for block math. Your response MUST follow the exact JSON template provided, with all required fields and proper formatting.'
         },
         {
           role: 'user',
@@ -458,6 +482,17 @@ export async function generateQuestions(
     5. Include an explanation of the answer
     6. Assign a difficulty level (0.0-1.0)
 
+    Important formatting guidelines:
+    - Use proper markdown formatting in your questions, answers, and explanations
+    - Use LaTeX for mathematical expressions and formulas, enclosed in $ for inline math and $$ for block math
+    - Examples of LaTeX usage:
+      - Inline math: $E = mc^2$
+      - Block math: $$\\sum_{i=1}^{n} i = \\frac{n(n+1)}{2}$$
+      - Fractions: $\\frac{a}{b}$
+      - Square roots: $\\sqrt{x}$
+      - Subscripts and superscripts: $x_i^2$
+      - Greek letters: $\\alpha, \\beta, \\gamma, \\delta$
+
     Format your response as a JSON object with the following structure:
     {
       "questions": [
@@ -497,7 +532,7 @@ export async function generateQuestions(
       messages: [
         {
           role: 'system',
-          content: 'You are an expert educator and question designer. Create high-quality questions based on concepts.'
+          content: 'You are an expert educator and question designer. Create high-quality questions based on concepts. Use proper markdown formatting and LaTeX for mathematical expressions and formulas. For LaTeX, use $ for inline math and $$ for block math.'
         },
         {
           role: 'user',

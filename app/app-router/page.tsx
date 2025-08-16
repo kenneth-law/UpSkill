@@ -25,7 +25,7 @@ export default function AppRouterPage() {
         <Link href="/" className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-8 rounded-lg shadow-md transition-colors">
           Go to Home Page
         </Link>
-        <Link href="/demo" className="custom-button shadow-md">
+        <Link href="/dashboard" className="custom-button shadow-md">
           Try Custom Button
         </Link>
       </div>

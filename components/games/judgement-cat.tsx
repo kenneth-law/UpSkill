@@ -6,6 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Textarea } from '@/components/ui/textarea'
 import { Send, SkipForward } from 'lucide-react'
+import ReactMarkdown from 'react-markdown'
+import remarkMath from 'remark-math'
+import rehypeKatex from 'rehype-katex'
+import 'katex/dist/katex.min.css'
 
 interface JudgementCatProps {
   questions: Array<{
@@ -63,14 +67,14 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
 
     // Mock evaluation logic
     const isCorrect = Math.random() > 0.5 // Random result for placeholder
-    
+
     // Mock cat responses
     const correctResponses = [
       "Hmm, not terrible. For a human.",
       "Correct. Don't let it go to your head, meatbag.",
       "Well well, looks like you're not completely hopeless."
     ]
-    
+
     const incorrectResponses = [
       "Wrong. But I expected nothing less from you.",
       "That's incorrect. Even my tail could've answered that.",
@@ -175,7 +179,12 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
           <Card className="flex-grow flex flex-col">
             <CardHeader>
               <CardTitle className="text-xl">
-                {currentQuestion.text}
+                <ReactMarkdown
+                  remarkPlugins={[remarkMath]}
+                  rehypePlugins={[rehypeKatex]}
+                >
+                  {currentQuestion.text}
+                </ReactMarkdown>
               </CardTitle>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col">
@@ -233,10 +242,22 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
 
               <div className="mb-4 p-3 bg-gray-50 rounded">
                 <p className="text-sm font-semibold mb-1">Explanation:</p>
-                <p className="text-sm">{feedback.explanation}</p>
+                <p className="text-sm">
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {feedback.explanation}
+                  </ReactMarkdown>
+                </p>
                 <p className="text-sm mt-2">
                   <span className="font-semibold">Correct answer: </span>
-                  {currentQuestion.correctAnswer}
+                  <ReactMarkdown
+                    remarkPlugins={[remarkMath]}
+                    rehypePlugins={[rehypeKatex]}
+                  >
+                    {currentQuestion.correctAnswer}
+                  </ReactMarkdown>
                 </p>
               </div>
 

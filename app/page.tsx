@@ -424,16 +424,10 @@ export default function Home() {
                 </div>
                 <div className="mt-4 flex space-x-2">
                   <Link 
-                    href="/capstone-interview?courseId=demo&topic=Knowledge%20Synthesis&type=text"
+                    href="/dashboard"
                     className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors flex-1 text-center text-sm"
                   >
-                    Text Mode
-                  </Link>
-                  <Link 
-                    href="/capstone-interview?courseId=demo&topic=Knowledge%20Synthesis&type=voice"
-                    className="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors flex-1 text-center text-sm"
-                  >
-                    Voice Mode
+                    Try Capstone Interview
                   </Link>
                 </div>
               </div>
@@ -463,7 +457,7 @@ export default function Home() {
                 <p className="text-gray-600">Experience all our interactive learning modes and begin mastering any topic with our AI-powered platform.</p>
                 <div className="mt-4">
                   <Link 
-                    href="/demo" 
+                    href="/dashboard" 
                     className="bg-purple-600 hover:bg-purple-700 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors inline-flex items-center gap-2 w-full justify-center"
                   >
                     Get Started

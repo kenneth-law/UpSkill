@@ -33,6 +33,22 @@ export function AdaptiveQuiz({ questions, initialMastery = 0.3, onComplete }: Ad
   const [questionCount, setQuestionCount] = useState(0)
   const [startTime, setStartTime] = useState(Date.now())
 
+  // Fixed answer matching function with better debugging
+  const answersMatch = (userAnswer: string, correctAnswer: string) => {
+    const normalizedUser = String(userAnswer || '').trim().toLowerCase()
+    const normalizedCorrect = String(correctAnswer || '').trim().toLowerCase()
+
+    console.log('Comparing answers:', {
+      userAnswer: userAnswer,
+      correctAnswer: correctAnswer,
+      normalizedUser: normalizedUser,
+      normalizedCorrect: normalizedCorrect,
+      matches: normalizedUser === normalizedCorrect
+    })
+
+    return normalizedUser === normalizedCorrect
+  }
+
   // Mock questions if none provided
   const mockQuestions = questions.length > 0 ? questions : [
     {
@@ -109,13 +125,16 @@ export function AdaptiveQuiz({ questions, initialMastery = 0.3, onComplete }: Ad
     responseTime: number,
     questionDifficulty: number
   ) => {
+    console.log("Updating mastery:", { currentMastery, isCorrect, responseTime, questionDifficulty })
     // Simple placeholder algorithm
     const difficultyFactor = questionDifficulty * 0.5
     const timeFactor = Math.min(1, 30 / responseTime) * 0.2
-    
+
     if (isCorrect) {
+      console.log("Answer correct - increasing mastery")
       return Math.min(1, currentMastery + difficultyFactor * (0.1 + timeFactor))
     } else {
+      console.log("Answer incorrect - decreasing mastery")
       return Math.max(0, currentMastery - difficultyFactor * 0.15)
     }
   }
@@ -128,22 +147,29 @@ export function AdaptiveQuiz({ questions, initialMastery = 0.3, onComplete }: Ad
   ) => {
     // Filter out already answered questions
     const availableQuestions = allQuestions.filter(q => !answeredQuestionIds.includes(q.id))
-    
+
     if (availableQuestions.length === 0) {
       return allQuestions[0] // Fallback to first question if all answered
     }
-    
+
     // Find questions closest to current mastery level
-    availableQuestions.sort((a, b) => 
+    availableQuestions.sort((a, b) =>
       Math.abs(a.difficulty - currentMastery) - Math.abs(b.difficulty - currentMastery)
     )
-    
+
     return availableQuestions[0]
   }
 
   const handleSubmit = () => {
     const responseTime = (Date.now() - startTime) / 1000
-    const isCorrect = selectedAnswer === currentQuestion.correctAnswer
+    const isCorrect = answersMatch(selectedAnswer, currentQuestion.correctAnswer)
+
+    console.log('Submit details:', {
+      selectedAnswer,
+      correctAnswer: currentQuestion.correctAnswer,
+      isCorrect,
+      responseTime
+    })
 
     // Update mastery
     const newMastery = calculateMasteryUpdate(
@@ -292,9 +318,9 @@ export function AdaptiveQuiz({ questions, initialMastery = 0.3, onComplete }: Ad
                       <Label
                         htmlFor={`option-${index}`}
                         className={`cursor-pointer text-lg ${
-                          showFeedback && option === currentQuestion.correctAnswer
+                          showFeedback && answersMatch(option, currentQuestion.correctAnswer)
                             ? 'text-green-600 font-semibold'
-                            : showFeedback && option === selectedAnswer && option !== currentQuestion.correctAnswer
+                            : showFeedback && option === selectedAnswer && !answersMatch(option, currentQuestion.correctAnswer)
                             ? 'text-red-600'
                             : ''
                         }`}
@@ -313,11 +339,33 @@ export function AdaptiveQuiz({ questions, initialMastery = 0.3, onComplete }: Ad
                 >
                   <div className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg">
                     <RadioGroupItem value="true" id="true" className="w-5 h-5" />
-                    <Label htmlFor="true" className="text-lg">True</Label>
+                    <Label
+                      htmlFor="true"
+                      className={`cursor-pointer text-lg ${
+                        showFeedback && answersMatch('true', currentQuestion.correctAnswer)
+                          ? 'text-green-600 font-semibold'
+                          : showFeedback && selectedAnswer === 'true' && !answersMatch('true', currentQuestion.correctAnswer)
+                          ? 'text-red-600'
+                          : ''
+                      }`}
+                    >
+                      True
+                    </Label>
                   </div>
                   <div className="flex items-center space-x-3 p-3 hover:bg-gray-50 rounded-lg">
                     <RadioGroupItem value="false" id="false" className="w-5 h-5" />
-                    <Label htmlFor="false" className="text-lg">False</Label>
+                    <Label
+                      htmlFor="false"
+                      className={`cursor-pointer text-lg ${
+                        showFeedback && answersMatch('false', currentQuestion.correctAnswer)
+                          ? 'text-green-600 font-semibold'
+                          : showFeedback && selectedAnswer === 'false' && !answersMatch('false', currentQuestion.correctAnswer)
+                          ? 'text-red-600'
+                          : ''
+                      }`}
+                    >
+                      False
+                    </Label>
                   </div>
                 </RadioGroup>
               )}
@@ -325,12 +373,17 @@ export function AdaptiveQuiz({ questions, initialMastery = 0.3, onComplete }: Ad
               {showFeedback && (
                 <div className="mt-6 p-4 bg-gray-50 rounded-lg">
                   <p className="font-semibold mb-3 text-lg">
-                    {selectedAnswer === currentQuestion.correctAnswer ? (
+                    {answersMatch(selectedAnswer, currentQuestion.correctAnswer) ? (
                       <span className="text-green-600">✓ Correct!</span>
                     ) : (
                       <span className="text-red-600">✗ Incorrect</span>
                     )}
                   </p>
+                  {!answersMatch(selectedAnswer, currentQuestion.correctAnswer) && (
+                    <p className="text-base text-gray-700 mb-2">
+                      <strong>Correct answer:</strong> {currentQuestion.correctAnswer}
+                    </p>
+                  )}
                   {currentQuestion.explanation && (
                     <p className="text-base text-gray-700">{currentQuestion.explanation}</p>
                   )}

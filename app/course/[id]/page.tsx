@@ -10,6 +10,10 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ArrowLeft, Trophy, Star, Lock, Gamepad2, Cat, BrainCircuit, X } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { ProgressOverlay } from '@/components/ui/progress-overlay'
+import { BoardGame } from '@/components/games/the-board'
+import { JudgementCat } from '@/components/games/judgement-cat'
+import { AdaptiveQuiz } from '@/components/games/adaptive-quiz'
+import { Flashcards } from '@/components/games/flashcards'
 
 // Define types for our data
 type Concept = {
@@ -91,6 +95,10 @@ export default function CoursePage() {
   const [selectedNode, setSelectedNode] = useState<SkillNode | null>(null)
   const [isPopupOpen, setIsPopupOpen] = useState(false)
   const [isGenerating, setIsGenerating] = useState(false)
+  const [activeGame, setActiveGame] = useState<GameType | null>(null)
+  const [gameContent, setGameContent] = useState<any[]>([])
+  const [gameCompleted, setGameCompleted] = useState(false)
+  const [gameScore, setGameScore] = useState(0)
 
   // Using the shared Supabase client from lib/utils/supabase
 
@@ -377,6 +385,10 @@ export default function CoursePage() {
       lesson.content.concepts.includes(c.id)
     )
 
+    // Reset game state
+    setGameCompleted(false)
+    setGameScore(0)
+
     // Mark the node as completed and unlock the next level
     const updatedNodes = skillNodes.map(node => {
       if (node.id === selectedNode.id) {
@@ -441,11 +453,47 @@ export default function CoursePage() {
         throw new Error('Failed to generate game content')
       }
 
-      // Hide progress overlay before navigation
-      setIsGenerating(false)
+      // Get the game content from the response
+      const data = await response.json();
 
-      // Navigate to the appropriate game based on the game type
-      router.push(`/demo?game=${selectedNode.gameType}&courseId=${courseId}`)
+      // Set the game content and active game
+      if (data && data.gameContent) {
+        setGameContent(data.gameContent);
+        setActiveGame(selectedNode.gameType);
+      } else {
+        // Fallback to mock data if no content is returned
+        console.log('[DEBUG] No game content returned, using mock data');
+
+        // Import mock data based on game type
+        const { 
+          mockBoardQuestions, 
+          mockJudgementCatQuestions, 
+          mockAdaptiveQuizQuestions,
+          mockFlashcards 
+        } = await import('@/lib/utils/mock-data');
+
+        switch (selectedNode.gameType) {
+          case 'board':
+            setGameContent(mockBoardQuestions);
+            break;
+          case 'judgement-cat':
+            setGameContent(mockJudgementCatQuestions);
+            break;
+          case 'adaptive-quiz':
+            setGameContent(mockAdaptiveQuizQuestions);
+            break;
+          case 'flashcards':
+            setGameContent(mockFlashcards);
+            break;
+          default:
+            setGameContent([]);
+        }
+
+        setActiveGame(selectedNode.gameType);
+      }
+
+      // Hide progress overlay
+      setIsGenerating(false);
     } catch (error) {
       console.error('Error generating game content:', error)
       // Hide progress overlay
@@ -474,6 +522,123 @@ export default function CoursePage() {
       default:
         return <Gamepad2 className="w-5 h-5" />
     }
+  }
+
+  // Handle game completion
+  const handleGameComplete = (score: number) => {
+    setGameScore(score);
+    setGameCompleted(true);
+
+    // Update the node with the score
+    if (selectedNode) {
+      const updatedNodes = skillNodes.map(node => {
+        if (node.id === selectedNode.id) {
+          return { ...node, completed: true, score };
+        }
+        return node;
+      });
+      setSkillNodes(updatedNodes);
+    }
+  }
+
+  // Reset game
+  const resetGame = () => {
+    setActiveGame(null);
+    setGameCompleted(false);
+    setGameScore(0);
+  }
+
+  // Render the active game
+  const renderGame = () => {
+    if (gameCompleted) {
+      return (
+        <div className="max-w-md mx-auto p-4 text-center">
+          <motion.div
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5 }}
+          >
+            <Card className="mb-6">
+              <CardHeader>
+                <CardTitle>Game Completed!</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-4xl font-bold text-indigo-600 mb-4">{gameScore}%</p>
+                <p className="mb-4">
+                  {gameScore >= 80 ? "Excellent work! You're mastering this topic." :
+                   gameScore >= 60 ? "Good job! Keep practicing to improve." :
+                   "Nice try! More practice will help you improve."}
+                </p>
+                <p className="text-sm text-gray-500 italic">
+                  Your progress has been saved and will be used to personalize your learning experience.
+                </p>
+              </CardContent>
+            </Card>
+
+            <div className="flex gap-4">
+              <Button 
+                variant="outline" 
+                className="flex-1"
+                onClick={() => setGameCompleted(false)}
+              >
+                Play Again
+              </Button>
+              <Button 
+                className="flex-1"
+                onClick={resetGame}
+              >
+                Return to Course
+              </Button>
+            </div>
+          </motion.div>
+        </div>
+      );
+    }
+
+    return (
+      <div className="p-4">
+        <div className="flex gap-4 mb-4">
+          <Button 
+            variant="outline" 
+            onClick={resetGame}
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Course
+          </Button>
+        </div>
+
+        <div className="game-container bg-white rounded-lg shadow-md overflow-hidden">
+          {activeGame === 'board' && (
+            <BoardGame 
+              concepts={gameContent}
+              onComplete={(score) => handleGameComplete(score)}
+            />
+          )}
+
+          {activeGame === 'judgement-cat' && (
+            <JudgementCat 
+              questions={gameContent}
+              onComplete={(score) => handleGameComplete(score)}
+            />
+          )}
+
+          {activeGame === 'adaptive-quiz' && (
+            <AdaptiveQuiz 
+              questions={gameContent}
+              initialMastery={0.3}
+              onComplete={(mastery) => handleGameComplete(Math.round(mastery * 100))}
+            />
+          )}
+
+          {activeGame === 'flashcards' && (
+            <Flashcards 
+              cards={gameContent}
+              onComplete={(score) => handleGameComplete(score)}
+            />
+          )}
+        </div>
+      </div>
+    );
   }
 
   if (isLoading) {
@@ -515,153 +680,161 @@ export default function CoursePage() {
         </header>
 
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-8">
-          {/* Course Info */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>{topic?.title}</CardTitle>
-              <CardDescription>
-                {topic?.difficulty_level.charAt(0).toUpperCase() + topic?.difficulty_level.slice(1)} •
-                {studyPlan?.estimated_hours} hours • {studyPlan?.total_lessons} lessons
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-gray-700">{topic?.description}</p>
-            </CardContent>
-          </Card>
+          {activeGame ? (
+            // Render the active game
+            renderGame()
+          ) : (
+            // Render the course content
+            <>
+              {/* Course Info */}
+              <Card className="mb-8">
+                <CardHeader>
+                  <CardTitle>{topic?.title}</CardTitle>
+                  <CardDescription>
+                    {topic?.difficulty_level.charAt(0).toUpperCase() + topic?.difficulty_level.slice(1)} •
+                    {studyPlan?.estimated_hours} hours • {studyPlan?.total_lessons} lessons
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-gray-700">{topic?.description}</p>
+                </CardContent>
+              </Card>
 
-          {/* Skill Tree */}
-          <div className="mb-8">
-            <h2 className="text-xl font-bold mb-4">Skill Tree</h2>
-            <p className="text-gray-600 mb-6">
-              Complete mini-games to progress through the skill tree. Start from level 1 and unlock higher levels as you complete games.
-            </p>
+              {/* Skill Tree */}
+              <div className="mb-8">
+                <h2 className="text-xl font-bold mb-4">Skill Tree</h2>
+                <p className="text-gray-600 mb-6">
+                  Complete mini-games to progress through the skill tree. Start from level 1 and unlock higher levels as you complete games.
+                </p>
 
-            {/* Skill Tree Visualization */}
-            <div className="relative py-8">
-              {/* Level indicators */}
-              <div className="absolute left-0 top-0 bottom-0 w-24 flex flex-col justify-around">
-                {[1, 2, 3, 4, 5].map(level => (
-                  <div key={`level-${level}`} className="h-40 flex items-center justify-center">
-                    <div className="px-4 py-2 rounded-l-lg shadow-sm font-bold text-gray-700">
-                      Level {level}
-                    </div>
-                  </div>
-                ))}
-              </div>
-
-              {/* Skill tree nodes by level */}
-              <div className="ml-24">
-                {[1, 2, 3, 4, 5].map((level, index) => (
-                  <div
-                    key={`level-row-${level}`}
-                    className={`mb-12 flex justify-center ${index < 4 ? 'border-b border-gray-200 pb-10' : ''}`}
-                  >
-                    <div className="flex flex-wrap justify-center gap-8">
-                      {skillNodes
-                        .filter(node => node.level === level)
-                        .map(node => (
-                          <motion.div
-                            key={node.id}
-                            whileHover={!node.locked ? { scale: 1.05 } : {}}
-                            whileTap={!node.locked ? { scale: 0.95 } : {}}
-                            onClick={() => handleNodeClick(node)}
-                            className={`relative cursor-pointer ${node.locked ? 'opacity-50' : ''}`}
-                          >
-                            <div
-                              className={`w-32 h-40 rounded-lg flex flex-col items-center justify-center shadow-lg p-2
-                                ${node.locked 
-                                  ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white'
-                                  : node.completed
-                                    ? (node.score && node.score >= 80
-                                      ? 'bg-gradient-to-br from-green-400 to-green-600 text-white'
-                                      : 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white')
-                                    : 'bg-gradient-to-br from-indigo-400 to-indigo-600 text-white'}
-                              `}
-                            >
-                              {node.locked ? (
-                                <Lock className="w-8 h-8 text-white" />
-                              ) : (
-                                <>
-                                  {getGameIcon(node.gameType)}
-                                  <div className="text-xs mt-1 font-medium text-white" style={textShadowStyle}>
-                                    {node.gameType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
-                                  </div>
-                                  <div className="text-xs mt-2 font-bold text-white text-center line-clamp-3" style={textShadowStyle}>
-                                    {node.title}
-                                  </div>
-                                </>
-                              )}
-                            </div>
-                            {node.completed && (
-                              <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1 shadow-md">
-                                <Star className="w-4 h-4 text-white" />
-                              </div>
-                            )}
-                          </motion.div>
-                        ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-
-          {/* Popup for Selected Node Details */}
-          <AnimatePresence>
-            {isPopupOpen && selectedNode && (
-              <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <motion.div
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 0.9 }}
-                  className="relative w-full max-w-md"
-                >
-                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-xl overflow-hidden">
-                    <div className="absolute top-2 right-2">
-                      <button
-                        onClick={closePopup}
-                        className="bg-white bg-opacity-20 rounded-full p-1 text-white hover:bg-opacity-30 transition-all"
-                      >
-                        <X className="w-5 h-5" />
-                      </button>
-                    </div>
-
-                    <div className="p-6 text-white">
-                      <div className="flex items-center gap-2 mb-2">
-                        {getGameIcon(selectedNode.gameType)}
-                        <h3 className="text-xl font-bold" style={textShadowStyle}>{selectedNode.title}</h3>
-                      </div>
-
-                      <div className="text-white text-opacity-90 text-sm mb-4" style={textShadowStyle}>
-                        {selectedNode.gameType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} •
-                        Level {selectedNode.level} •
-                        {selectedNode.hardnessLevel.charAt(0).toUpperCase() + selectedNode.hardnessLevel.slice(1)}
-                      </div>
-
-                      <p className="text-white text-opacity-90 mb-4" style={textShadowStyle}>{selectedNode.description}</p>
-
-                      {selectedNode.goals && (
-                        <div className="mt-2 mb-4">
-                          <h3 className="text-sm font-semibold text-white mb-1" style={textShadowStyle}>Session Goals:</h3>
-                          <p className="text-sm text-white text-opacity-90" style={textShadowStyle}>{selectedNode.goals}</p>
+                {/* Skill Tree Visualization */}
+                <div className="relative py-8">
+                  {/* Level indicators */}
+                  <div className="absolute left-0 top-0 bottom-0 w-24 flex flex-col justify-around">
+                    {[1, 2, 3, 4, 5].map(level => (
+                      <div key={`level-${level}`} className="h-40 flex items-center justify-center">
+                        <div className="px-4 py-2 rounded-l-lg shadow-sm font-bold text-gray-700">
+                          Level {level}
                         </div>
-                      )}
-
-                      <Button
-                        onClick={() => {
-                          startGame();
-                          closePopup();
-                        }}
-                        className="w-full bg-white text-indigo-600 hover:bg-opacity-90"
-                      >
-                        Start Game
-                      </Button>
-                    </div>
+                      </div>
+                    ))}
                   </div>
-                </motion.div>
+
+                  {/* Skill tree nodes by level */}
+                  <div className="ml-24">
+                    {[1, 2, 3, 4, 5].map((level, index) => (
+                      <div
+                        key={`level-row-${level}`}
+                        className={`mb-12 flex justify-center ${index < 4 ? 'border-b border-gray-200 pb-10' : ''}`}
+                      >
+                        <div className="flex flex-wrap justify-center gap-8">
+                          {skillNodes
+                            .filter(node => node.level === level)
+                            .map(node => (
+                              <motion.div
+                                key={node.id}
+                                whileHover={!node.locked ? { scale: 1.05 } : {}}
+                                whileTap={!node.locked ? { scale: 0.95 } : {}}
+                                onClick={() => handleNodeClick(node)}
+                                className={`relative cursor-pointer ${node.locked ? 'opacity-50' : ''}`}
+                              >
+                                <div
+                                  className={`w-32 h-40 rounded-lg flex flex-col items-center justify-center shadow-lg p-2
+                                    ${node.locked 
+                                      ? 'bg-gradient-to-br from-gray-300 to-gray-500 text-white'
+                                      : node.completed
+                                        ? (node.score && node.score >= 80
+                                          ? 'bg-gradient-to-br from-green-400 to-green-600 text-white'
+                                          : 'bg-gradient-to-br from-yellow-400 to-yellow-600 text-white')
+                                        : 'bg-gradient-to-br from-indigo-400 to-indigo-600 text-white'}
+                                  `}
+                                >
+                                  {node.locked ? (
+                                    <Lock className="w-8 h-8 text-white" />
+                                  ) : (
+                                    <>
+                                      {getGameIcon(node.gameType)}
+                                      <div className="text-xs mt-1 font-medium text-white" style={textShadowStyle}>
+                                        {node.gameType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')}
+                                      </div>
+                                      <div className="text-xs mt-2 font-bold text-white text-center line-clamp-3" style={textShadowStyle}>
+                                        {node.title}
+                                      </div>
+                                    </>
+                                  )}
+                                </div>
+                                {node.completed && (
+                                  <div className="absolute -top-1 -right-1 bg-green-500 rounded-full p-1 shadow-md">
+                                    <Star className="w-4 h-4 text-white" />
+                                  </div>
+                                )}
+                              </motion.div>
+                            ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
-            )}
-          </AnimatePresence>
+
+              {/* Popup for Selected Node Details */}
+              <AnimatePresence>
+                {isPopupOpen && selectedNode && (
+                  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      className="relative w-full max-w-md"
+                    >
+                      <div className="bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl shadow-xl overflow-hidden">
+                        <div className="absolute top-2 right-2">
+                          <button
+                            onClick={closePopup}
+                            className="bg-white bg-opacity-20 rounded-full p-1 text-white hover:bg-opacity-30 transition-all"
+                          >
+                            <X className="w-5 h-5" />
+                          </button>
+                        </div>
+
+                        <div className="p-6 text-white">
+                          <div className="flex items-center gap-2 mb-2">
+                            {getGameIcon(selectedNode.gameType)}
+                            <h3 className="text-xl font-bold" style={textShadowStyle}>{selectedNode.title}</h3>
+                          </div>
+
+                          <div className="text-white text-opacity-90 text-sm mb-4" style={textShadowStyle}>
+                            {selectedNode.gameType.split('-').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ')} •
+                            Level {selectedNode.level} •
+                            {selectedNode.hardnessLevel.charAt(0).toUpperCase() + selectedNode.hardnessLevel.slice(1)}
+                          </div>
+
+                          <p className="text-white text-opacity-90 mb-4" style={textShadowStyle}>{selectedNode.description}</p>
+
+                          {selectedNode.goals && (
+                            <div className="mt-2 mb-4">
+                              <h3 className="text-sm font-semibold text-white mb-1" style={textShadowStyle}>Session Goals:</h3>
+                              <p className="text-sm text-white text-opacity-90" style={textShadowStyle}>{selectedNode.goals}</p>
+                            </div>
+                          )}
+
+                          <Button
+                            onClick={() => {
+                              startGame();
+                              closePopup();
+                            }}
+                            className="w-full bg-white text-indigo-600 hover:bg-opacity-90"
+                          >
+                            Start Game
+                          </Button>
+                        </div>
+                      </div>
+                    </motion.div>
+                  </div>
+                )}
+              </AnimatePresence>
+            </>
+          )}
         </main>
 
         {/* Progress Overlay */}

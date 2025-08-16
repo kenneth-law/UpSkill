@@ -263,9 +263,9 @@ export const mockStudyPlan = {
   ]
 }
 
-// Function to check if we're in demo mode
+// Function to check if we're in demo mode - always returns false now that demo mode is removed
 export function isDemoMode(): boolean {
-  return process.env.NEXT_PUBLIC_DEMO_MODE === 'true'
+  return false
 }
 
 // Mock API response for concept extraction
