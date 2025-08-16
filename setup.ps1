@@ -137,7 +137,8 @@ OPENAI_API_KEY=your-openai-api-key
 # App Config
 NEXT_PUBLIC_APP_URL=http://localhost:3000
 NEXT_PUBLIC_APP_NAME="UpSkill"
-"@ | Out-File -FilePath ".env.local" -Encoding utf8
+"@
+ | Out-File -FilePath ".env.local" -Encoding utf8
 
         Write-Host "✓ Created basic .env.local file" -ForegroundColor Green
         Write-Host "Please edit .env.local to add your API keys" -ForegroundColor Yellow
@@ -150,7 +151,7 @@ Write-Host ""
 Write-Host "Next steps:" -ForegroundColor Cyan
 Write-Host "1. Make sure you've added your API keys to .env.local"
 Write-Host "2. Create a Supabase project and run the schema in lib/database/schema.sql"
-Write-Host "3. Run 'npm run dev' to start the development server"
+Write-Host "3. Run ``npm run dev`` to start the development server"
 Write-Host "4. Open http://localhost:3000 in your browser"
 Write-Host ""
 
@@ -159,6 +160,6 @@ if ($startNow -eq "y" -or $startNow -eq "Y") {
     Write-Host "Starting development server..." -ForegroundColor Cyan
     npm run dev
 } else {
-    Write-Host "You can start the server later with 'npm run dev'" -ForegroundColor Yellow
-    Write-Host "Or run the demo with `.\run-demo.ps1`" -ForegroundColor Yellow
+    Write-Host "You can start the server later with ``npm run dev``" -ForegroundColor Yellow
+    Write-Host "Or run the demo with .\run-demo.ps1" -ForegroundColor Yellow
 }
