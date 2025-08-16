@@ -16,6 +16,7 @@ export default function Home() {
   const [isFlipped, setIsFlipped] = useState(false)
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [hoveredCard, setHoveredCard] = useState(null)
+  const [windowSize, setWindowSize] = useState({ width: 1200, height: 800 })
   const { user } = useAuth()
 
   const heroRef = useRef(null)
@@ -88,13 +89,38 @@ export default function Home() {
     "Cross-cultural communication"
   ]
 
+  // Window size tracking
+  useEffect(() => {
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      const handleResize = () => {
+        setWindowSize({
+          width: window.innerWidth,
+          height: window.innerHeight
+        })
+      }
+
+      // Set initial size
+      handleResize()
+
+      // Add event listener
+      window.addEventListener('resize', handleResize)
+
+      // Clean up
+      return () => window.removeEventListener('resize', handleResize)
+    }
+  }, [])
+
   // Mouse tracking
   useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
+    // Only run on client side
+    if (typeof window !== 'undefined') {
+      const handleMouseMove = (e) => {
+        setMousePosition({ x: e.clientX, y: e.clientY })
+      }
+      window.addEventListener('mousemove', handleMouseMove)
+      return () => window.removeEventListener('mousemove', handleMouseMove)
     }
-    window.addEventListener('mousemove', handleMouseMove)
-    return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
   // Typing animation
@@ -229,12 +255,12 @@ export default function Home() {
               key={i}
               className="absolute w-1 h-1 bg-white/40 rounded-full"
               initial={{
-                x: Math.random() * window.innerWidth,
-                y: window.innerHeight + 20
+                x: Math.random() * windowSize.width,
+                y: windowSize.height + 20
               }}
               animate={{
                 y: -20,
-                x: Math.random() * window.innerWidth
+                x: Math.random() * windowSize.width
               }}
               transition={{
                 duration: Math.random() * 10 + 10,
