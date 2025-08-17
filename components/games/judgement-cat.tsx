@@ -58,49 +58,91 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
   const evaluateAnswer = async () => {
     setIsProcessing(true)
 
-    // Simulate API call delay
-    await new Promise(resolve => setTimeout(resolve, 1500))
+    try {
+    const res = await fetch('/api/judgement-cat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        question: currentQuestion.text,
+        userAnswer,
+      }),
+    });
+    
 
-    // Mock evaluation logic
-    const isCorrect = Math.random() > 0.5 // Random result for placeholder
-    
-    // Mock cat responses
-    const correctResponses = [
-      "Hmm, not terrible. For a human.",
-      "Correct. Don't let it go to your head, meatbag.",
-      "Well well, looks like you're not completely hopeless."
-    ]
-    
-    const incorrectResponses = [
-      "Wrong. But I expected nothing less from you.",
-      "That's incorrect. Even my tail could've answered that.",
-      "*yawns* Wake me when you get one right."
-    ]
+    const data = await res.json();
 
     setFeedback({
-      isCorrect,
-      catResponse: isCorrect 
-        ? correctResponses[Math.floor(Math.random() * correctResponses.length)]
-        : incorrectResponses[Math.floor(Math.random() * incorrectResponses.length)],
-      explanation: isCorrect 
-        ? "Your answer covers the key points correctly." 
-        : "Your answer is missing some key concepts or contains inaccuracies."
-    })
+      isCorrect: data.isCorrect,
+      catResponse: data.catResponse,
+      explanation: data.explanation,
+    });
 
-    setCatMood(isCorrect ? '=^.^=' : '-.-')
+    setCatMood(data.isCorrect ? '=^.^=' : '-.-');
 
-    // Track response
     const responseData = {
       questionId: currentQuestion.id,
       userAnswer,
-      isCorrect,
-      score: isCorrect ? 1 : 0
-    }
+      isCorrect: data.isCorrect,
+      score: data.isCorrect ? 1 : 0,
+    };
 
-    setResponses(prev => [...prev, responseData])
-    if (isCorrect) setScore(prev => prev + 1)
+    setResponses(prev => [...prev, responseData]);
+    if (data.isCorrect) setScore(prev => prev + 1);
+  } catch (err) {
+    setFeedback({
+      isCorrect: false,
+      catResponse: "Something went wrong. Even I can't judge this.",
+      explanation: "API error. Please try again.",
+    });
+    setCatMood('>.>');
+  }
 
-    setIsProcessing(false)
+  setIsProcessing(false);
+    
+  //   // Simulate API call delay
+  //   await new Promise(resolve => setTimeout(resolve, 1500))
+
+  //   // Mock evaluation logic
+  //   const isCorrect = Math.random() > 0.5 // Random result for placeholder
+    
+  //   // Mock cat responses
+  //   const correctResponses = [
+  //     "Hmm, not terrible. For a human.",
+  //     "Correct. Don't let it go to your head, meatbag.",
+  //     "Well well, looks like you're not completely hopeless."
+  //   ]
+    
+  //   const incorrectResponses = [
+  //     "Wrong. But I expected nothing less from you.",
+  //     "That's incorrect. Even my tail could've answered that.",
+  //     "*yawns* Wake me when you get one right."
+  //   ]
+
+  //   setFeedback({
+  //     isCorrect,
+  //     catResponse: isCorrect 
+  //       ? correctResponses[Math.floor(Math.random() * correctResponses.length)]
+  //       : incorrectResponses[Math.floor(Math.random() * incorrectResponses.length)],
+  //     explanation: isCorrect 
+  //       ? "Your answer covers the key points correctly." 
+  //       : "Your answer is missing some key concepts or contains inaccuracies."
+  //   })
+
+  //   setCatMood(isCorrect ? '=^.^=' : '-.-')
+
+  //   // Track response
+  //   const responseData = {
+  //     questionId: currentQuestion.id,
+  //     userAnswer,
+  //     isCorrect,
+  //     score: isCorrect ? 1 : 0
+  //   }
+
+  //   setResponses(prev => [...prev, responseData])
+  //   if (isCorrect) setScore(prev => prev + 1)
+
+  //   setIsProcessing(false)
+  // }
   }
 
   const nextQuestion = () => {
