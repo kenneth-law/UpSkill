@@ -89,7 +89,9 @@ export async function POST(request: NextRequest) {
       frequency: body.frequency,
       duration: body.duration,
       masteryDepth: body.masteryDepth,
-      studySpan: body.studySpan
+      studySpan: body.studySpan,
+      courseLength: body.courseLength,
+      ageGroup: body.ageGroup
     });
 
     // If userId wasn't found in the session, try to get it from the request body
@@ -106,7 +108,7 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    const { topic, frequency, duration, masteryDepth, studySpan, extractedText } = body
+    const { topic, frequency, duration, masteryDepth, studySpan, courseLength, ageGroup, extractedText } = body
 
     // Validate required fields
     if (!topic) {
@@ -246,7 +248,9 @@ export async function POST(request: NextRequest) {
         `Learn ${topic} with mastery level ${masteryDepth}/100`,
         timeConstraint,
         masteryDepth,
-        studySpan
+        studySpan,
+        false, // returnPrompt parameter
+        ageGroup
       );
       console.log('[DEBUG-SERVER] Study plan generation completed successfully. Total lessons:',
         studyPlan.result.totalLessons || studyPlan.result.lessons?.length || 0);

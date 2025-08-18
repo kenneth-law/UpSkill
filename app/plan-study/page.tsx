@@ -25,6 +25,7 @@ function PlanStudyContent() {
   const [duration, setDuration] = useState('15')
   const [masteryDepth, setMasteryDepth] = useState(50)
   const [studySpan, setStudySpan] = useState(30) // Default to 30 days (about a month)
+  const [ageGroup, setAgeGroup] = useState('13-16') // Default age group
   const [extractedText, setExtractedText] = useState('')
   const [textSource, setTextSource] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
@@ -57,6 +58,8 @@ function PlanStudyContent() {
     params.set('duration', duration)
     params.set('masteryDepth', masteryDepth.toString())
     params.set('studySpan', studySpan.toString())
+    params.set('courseLength', duration) // Using duration for courseLength
+    params.set('ageGroup', ageGroup)
 
     if (extractedText) {
       params.set('extractedText', extractedText)
@@ -229,24 +232,71 @@ function PlanStudyContent() {
                              studySpan === 7 ? '1 week' : 
                              studySpan === 14 ? '2 weeks' : 
                              studySpan === 30 ? '1 month' : 
+                             studySpan === 90 ? '3 months' : 
+                             studySpan === 180 ? '6 months' : 
                              studySpan === 365 ? '1 year' : 
                              `${studySpan} days`}
                           </span>
                         </div>
-                        <div className="flex flex-wrap gap-2">
+                        <Slider
+                          value={[studySpan]}
+                          min={1}
+                          max={365}
+                          step={1}
+                          onValueChange={(value) => setStudySpan(value[0])}
+                          className="py-4"
+                        />
+                        <div className="flex justify-between text-sm text-gray-500">
+                          <span>1 day</span>
+                          <span>1 year</span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 mt-2">
                           {[
                             { value: 1, label: '1 day' },
                             { value: 7, label: '1 week' },
                             { value: 14, label: '2 weeks' },
                             { value: 30, label: '1 month' },
+                            { value: 90, label: '3 months' },
+                            { value: 180, label: '6 months' },
                             { value: 365, label: '1 year' }
                           ].map((option) => (
                             <button
                               key={`span-${option.value}`}
                               type="button"
                               onClick={() => setStudySpan(option.value)}
+                              className="px-3 py-1 text-xs rounded-lg font-medium transition-all duration-200 transform bg-purple-100 text-purple-700 hover:bg-purple-200 hover:shadow-md hover:scale-105 border border-purple-200"
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+                  {/* Age Group section */}
+                  <div className="space-y-4">
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="h-8 w-1 bg-gradient-to-b from-purple-400 to-purple-600 rounded-full"></div>
+                      <Label className="text-xl font-bold text-purple-800">Age Group</Label>
+                    </div>
+                    <div className="space-y-6">
+                      <div className="space-y-4">
+                        <Label className="text-sm text-gray-600">Select the age group for this course</Label>
+                        <div className="flex flex-wrap gap-2">
+                          {[
+                            { value: '10-12', label: '10-12' },
+                            { value: '13-16', label: '13-16' },
+                            { value: '17-20', label: '17-20' },
+                            { value: '21+', label: '21+' }
+                          ].map((option) => (
+                            <button
+                              key={`age-${option.value}`}
+                              type="button"
+                              onClick={() => setAgeGroup(option.value)}
                               className={`px-4 py-2 rounded-lg font-medium transition-all duration-200 transform ${
-                                studySpan === option.value
+                                ageGroup === option.value
                                   ? 'bg-gradient-to-br from-purple-500 to-purple-700 text-white shadow-lg scale-105 border-2 border-purple-300'
                                   : 'bg-purple-100 text-purple-700 hover:bg-purple-200 hover:shadow-md hover:scale-105 border border-purple-200'
                               }`}

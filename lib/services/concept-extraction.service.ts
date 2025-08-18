@@ -279,6 +279,7 @@ export async function processExtractedContent(
  * @param timeConstraint Time constraint in minutes per day
  * @param masteryDepth How in-depth the user wants to master the topic (1-100)
  * @param studySpan How long the user wants the study plan to span (in days)
+ * @param ageGroup The age group for which the study plan is being created
  * @returns Promise resolving to the generated study plan
  */
 export async function generateStudyPlan(
@@ -287,7 +288,8 @@ export async function generateStudyPlan(
   timeConstraint: number = 30,
   masteryDepth: number = 50,
   studySpan: number = 30,
-  returnPrompt: boolean = false
+  returnPrompt: boolean = false,
+  ageGroup: string = '13-16'
 ): Promise<{ result: any, prompt?: string }> {
   try {
     if (!Array.isArray(concepts) || concepts.length === 0) {
@@ -308,6 +310,7 @@ export async function generateStudyPlan(
     Time constraint: ${timeConstraint} minutes per day
     Mastery depth: ${masteryDepth}/100 (higher values indicate deeper mastery)
     Study duration: ${studySpan} days
+    Age group: ${ageGroup} (tailor the content and approach to this age group)
 
     Important formatting guidelines:
     - Use proper markdown formatting in your descriptions and goals

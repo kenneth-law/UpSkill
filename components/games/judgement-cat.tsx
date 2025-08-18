@@ -35,7 +35,7 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
   const [isProcessing, setIsProcessing] = useState(false)
 
   // Mock questions if none provided
-  const mockQuestions = questions.length > 0 ? questions : [
+  const questionsToUse = questions.length > 0 ? questions : [
     {
       id: '1',
       text: 'Explain the concept of photosynthesis in your own words.',
@@ -56,7 +56,7 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
     }
   ]
 
-  const currentQuestion = mockQuestions[currentIndex]
+  const currentQuestion = questionsToUse[currentIndex]
 
   // Placeholder for the evaluation function - will be implemented with API call later
   const evaluateAnswer = async () => {
@@ -151,14 +151,14 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
   }
 
   const nextQuestion = () => {
-    if (currentIndex < mockQuestions.length - 1) {
+    if (currentIndex < questionsToUse.length - 1) {
       setCurrentIndex(prev => prev + 1)
       setUserAnswer('')
       setFeedback(null)
       setCatMood(':3')
     } else {
       // Game complete
-      const finalScore = Math.round((score / mockQuestions.length) * 100)
+      const finalScore = Math.round((score / questionsToUse.length) * 100)
       onComplete(finalScore, responses)
     }
   }
@@ -191,13 +191,13 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
           {/* Progress Bar */}
           <div className="mb-6">
             <div className="flex justify-between text-base text-gray-600 mb-2">
-              <span>Question {currentIndex + 1} of {mockQuestions.length}</span>
+              <span>Question {currentIndex + 1} of {questionsToUse.length}</span>
               <span>Score: {score}/{currentIndex}</span>
             </div>
             <div className="w-full bg-gray-200 rounded-full h-3">
               <div
                 className="bg-blue-600 h-3 rounded-full transition-all"
-                style={{ width: `${((currentIndex + 1) / mockQuestions.length) * 100}%` }}
+                style={{ width: `${((currentIndex + 1) / questionsToUse.length) * 100}%` }}
               />
             </div>
           </div>
@@ -305,7 +305,7 @@ export function JudgementCat({ questions, onComplete }: JudgementCatProps) {
               </div>
 
               <Button onClick={nextQuestion} className="w-full">
-                {currentIndex < mockQuestions.length - 1 ? 'Next Question' : 'Finish'}
+                {currentIndex < questionsToUse.length - 1 ? 'Next Question' : 'Finish'}
               </Button>
             </CardContent>
           </Card>

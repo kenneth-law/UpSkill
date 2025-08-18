@@ -10,6 +10,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { ArrowLeft, Trophy, Star, Lock, Gamepad2, Cat, BrainCircuit, X, MessageCircle, Zap, ChevronRight, Sparkles, TreePine, Leaf, Clock, BookOpen } from 'lucide-react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ProgressOverlay } from '@/components/ui/progress-overlay'
+import { Markdown } from '@/components/ui/markdown'
 import { BoardGame } from '@/components/games/the-board'
 import { JudgementCat } from '@/components/games/judgement-cat'
 import { AdaptiveQuiz } from '@/components/games/adaptive-quiz'
@@ -138,7 +139,7 @@ export default function CoursePage() {
         goals: lesson.content?.goals || '',
         lessonId: lesson.id,
         completed: score !== undefined,
-        locked: level > 1 && !nodes.some(n => n.level === level - 1 && n.completed),
+        locked: false, // All games unlocked
         score
       })
     })
@@ -246,9 +247,10 @@ export default function CoursePage() {
         >
           <div className="text-6xl mb-4">🌳</div>
           <h2 className="text-2xl font-bold text-red-600 mb-4">{error}</h2>
-          <p className="text-gray-600 mb-6 max-w-md">
-            The learning path you're looking for might have been removed or doesn't exist yet.
-          </p>
+          <Markdown
+            content="The learning path you're looking for might have been removed or doesn't exist yet."
+            className="text-gray-600 mb-6 max-w-md"
+          />
           <Button
             onClick={() => router.push('/dashboard')}
             className="bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 text-white"
@@ -307,11 +309,14 @@ export default function CoursePage() {
                       Great Work!
                     </h2>
                     <p className="text-5xl font-bold text-gray-800 mb-4">{gameScore}%</p>
-                    <p className="text-gray-600 mb-6">
-                      {gameScore >= 80 ? "Outstanding! You've mastered this topic!" :
-                       gameScore >= 60 ? "Good progress! Keep practicing to improve." :
-                       "Nice effort! Review the material and try again."}
-                    </p>
+                    <Markdown
+                      content={
+                        gameScore >= 80 ? "Outstanding! You've mastered this topic!" :
+                        gameScore >= 60 ? "Good progress! Keep practicing to improve." :
+                        "Nice effort! Review the material and try again."
+                      }
+                      className="text-gray-600 mb-6"
+                    />
                     <div className="flex gap-3">
                       <Button
                         variant="outline"
@@ -409,7 +414,10 @@ export default function CoursePage() {
                     </div>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-gray-700">{topic?.description}</p>
+                    <Markdown 
+                      content={topic?.description}
+                      className="text-gray-700"
+                    />
                   </CardContent>
                 </Card>
               </motion.div>
@@ -422,9 +430,10 @@ export default function CoursePage() {
               >
                 <div className="mb-6">
                   <h2 className="text-2xl font-bold mb-2">Your Learning Tree</h2>
-                  <p className="text-gray-600">
-                    Complete games to grow your knowledge tree. Watch it flourish as you master each topic!
-                  </p>
+                  <Markdown
+                    content="Complete games to grow your knowledge tree. Watch it flourish as you master each topic!"
+                    className="text-gray-600"
+                  />
                 </div>
 
                 <SkillTree

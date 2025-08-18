@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import styles from './styles.module.css'
 import { useAuth } from '@/lib/auth/auth-provider'
+import { Markdown } from '@/components/ui/markdown'
 
 // Game mode color system
 const gameColors = {
@@ -191,7 +192,10 @@ function GameCard({ game, index }) {
         {/* Content */}
         <div className="p-6">
           <h3 className="text-xl font-bold mb-2">{game.title}</h3>
-          <p className="text-gray-600 mb-4 text-sm leading-relaxed">{game.description}</p>
+          <Markdown 
+            content={game.description}
+            className="text-gray-600 mb-4 text-sm leading-relaxed"
+          />
 
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
@@ -358,15 +362,17 @@ export default function Home() {
             <span className="text-gray-900">With AI That Cares</span>
           </motion.h1>
 
-          <motion.p
-            className="text-xl text-gray-600 max-w-3xl mx-auto mb-12"
+          <motion.div
+            className="max-w-3xl mx-auto mb-12"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
           >
-            Turn overwhelming information into lasting knowledge through personalised,
-            gamified micro-learning powered by AI that adapts to you.
-          </motion.p>
+            <Markdown
+              content="Turn overwhelming information into lasting knowledge through personalised, gamified micro-learning powered by AI that adapts to you."
+              className="text-xl text-gray-600"
+            />
+          </motion.div>
 
           {/* CTA buttons with hover effects */}
           <motion.div
@@ -430,7 +436,10 @@ export default function Home() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold mb-4">The Learning Crisis</h2>
-            <p className="text-xl text-gray-600">AI is making students dependent, not intelligent</p>
+            <Markdown
+              content="AI is making students dependent, not intelligent"
+              className="text-xl text-gray-600"
+            />
           </motion.div>
 
           <div className="grid md:grid-cols-3 gap-8">
@@ -472,7 +481,10 @@ export default function Home() {
                     {item.icon}
                   </span>
                 </div>
-                <p className="text-gray-600">{item.label}</p>
+                <Markdown
+                  content={item.label}
+                  className="text-gray-600"
+                />
               </motion.div>
             ))}
           </div>
@@ -489,9 +501,10 @@ export default function Home() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold mb-4">Your Learning Journey</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Follow these simple steps to transform how you learn with UpSkill
-            </p>
+            <Markdown
+              content="Follow these simple steps to transform how you learn with UpSkill"
+              className="text-xl text-gray-600 max-w-3xl mx-auto"
+            />
           </motion.div>
 
           <div className="relative">
@@ -653,7 +666,10 @@ export default function Home() {
                   </motion.div>
 
                   <h3 className="text-xl font-bold mb-2">{step.title}</h3>
-                  <p className="text-gray-600 text-left md:text-center">{step.description}</p>
+                  <Markdown
+                    content={step.description}
+                    className="text-gray-600 text-left md:text-center"
+                  />
                 </motion.div>
               ))}
             </div>
@@ -690,9 +706,10 @@ export default function Home() {
             className="text-center mb-16"
           >
             <h2 className="text-4xl font-bold mb-4">Learn With AI, Not From AI</h2>
-            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-              Our scientifically-designed game modes ensure deep understanding, not surface-level memorisation
-            </p>
+            <Markdown
+              content="Our scientifically-designed game modes ensure deep understanding, not surface-level memorisation"
+              className="text-xl text-gray-600 max-w-3xl mx-auto"
+            />
           </motion.div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -756,7 +773,10 @@ export default function Home() {
                     </div>
                     <div>
                       <h3 className="font-semibold text-lg mb-1">{feature.title}</h3>
-                      <p className="text-gray-600">{feature.description}</p>
+                      <Markdown
+                        content={feature.description}
+                        className="text-gray-600"
+                      />
                     </div>
                   </motion.div>
                 ))}
@@ -823,7 +843,10 @@ export default function Home() {
             className="text-center mb-12"
           >
             <h2 className="text-4xl font-bold mb-4">Loved by Learners</h2>
-            <p className="text-xl text-gray-600">Join people who've transformed their study habits</p>
+            <Markdown
+              content="Join people who've transformed their study habits"
+              className="text-xl text-gray-600"
+            />
           </motion.div>
 
           <div className="relative">
@@ -842,9 +865,10 @@ export default function Home() {
                     </div>
                   </div>
                   <div>
-                    <p className="text-lg text-gray-700 mb-4 italic">
-                      "{testimonials[activeTestimonial].quote}"
-                    </p>
+                    <Markdown
+                      content={`"${testimonials[activeTestimonial].quote}"`}
+                      className="text-lg text-gray-700 mb-4 italic"
+                    />
                     <div>
                       <p className="font-semibold">{testimonials[activeTestimonial].author}</p>
                       <p className="text-sm text-gray-500">{testimonials[activeTestimonial].role}</p>
@@ -892,9 +916,10 @@ export default function Home() {
               <h2 className="text-4xl font-bold mb-4">
                 Ready to Take Control of Your Learning?
               </h2>
-              <p className="text-xl mb-8 opacity-90">
-                Join 5+ students mastering subjects with AI that teaches, not cheats
-              </p>
+              <Markdown
+                content="Join 5+ students mastering subjects with AI that teaches, not cheats"
+                className="text-xl mb-8 opacity-90"
+              />
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
                 <Link href={user ? "/dashboard" : "/login"}>
@@ -934,9 +959,10 @@ export default function Home() {
                   UpSkill
                 </span>
               </h3>
-              <p className="text-gray-600 text-sm">
-                Empowering learners to master any subject through AI-powered, gamified education.
-              </p>
+              <Markdown
+                content="Empowering learners to master any subject through AI-powered, gamified education."
+                className="text-gray-600 text-sm"
+              />
             </div>
 
             <div>

@@ -7,9 +7,10 @@ import { ProtectedRoute } from '@/components/auth/protected-route'
 import { supabase } from '@/lib/utils/supabase'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
-import { ArrowLeft, Trophy, Star, Lock, Gamepad2, Cat, BrainCircuit, X, MessageCircle, Zap, ChevronRight, Sparkles, TreePine, Leaf } from 'lucide-react'
+import { ArrowLeft, Trophy, Star, Lock, Gamepad2, Cat, BrainCircuit, X, MessageCircle, Zap, ChevronRight, Sparkles, TreePine, Leaf, Plus } from 'lucide-react'
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion'
 import { ProgressOverlay } from '@/components/ui/progress-overlay'
+import { Markdown } from '@/components/ui/markdown'
 import { BoardGame } from '@/components/games/the-board'
 import { JudgementCat } from '@/components/games/judgement-cat'
 import { AdaptiveQuiz } from '@/components/games/adaptive-quiz'
@@ -413,12 +414,15 @@ export function GameModeCard({ node, onStart, onClose }) {
 
       {/* Content */}
       <div className="p-6">
-        <p className="text-gray-600 mb-4">{node.description}</p>
+        <Markdown 
+          content={node.description}
+          className="text-gray-600 mb-4"
+        />
 
         {/* Metadata */}
         <div className="space-y-3 mb-6">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+            <div className="w-10 h-10 rounded-xl flex items-center justify-center"
                  style={{ backgroundColor: colors.bg }}>
               <Star className="w-5 h-5" style={{ color: colors.primary }} />
             </div>
@@ -432,13 +436,16 @@ export function GameModeCard({ node, onStart, onClose }) {
 
           {node.goals && (
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-lg flex items-center justify-center"
+              <div className="w-10 h-10 rounded-xl flex items-center justify-center"
                    style={{ backgroundColor: colors.bg }}>
                 <Target className="w-5 h-5" style={{ color: colors.primary }} />
               </div>
               <div className="flex-1">
                 <p className="text-xs text-gray-500">Session Goals</p>
-                <p className="text-sm text-gray-700">{node.goals}</p>
+                <Markdown 
+                  content={node.goals}
+                  className="text-sm text-gray-700"
+                />
               </div>
             </div>
           )}
@@ -618,7 +625,7 @@ export default function DashboardPage() {
             hardnessLevel: lesson.content?.hardnessLevel || 'beginner',
             goals: lesson.content?.goals || 'Master this concept',
             completed: !!session,
-            locked: level > 1 && !previousLevelCompleted,
+            locked: false, // All games unlocked
             score: session?.score || 0
           })
         })
@@ -682,9 +689,10 @@ export default function DashboardPage() {
         </header>
 
         <main className="max-w-7xl mx-auto px-4">
-          <p className="text-gray-600 mb-8">
-            Welcome to your personalised learning dashboard. Select a course to continue your learning journey.
-          </p>
+          <Markdown 
+            content="Welcome to your personalised learning dashboard. Select a course to continue your learning journey."
+            className="text-gray-600 mb-8"
+          />
 
           {/* Course cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
@@ -700,7 +708,10 @@ export default function DashboardPage() {
                   <CardDescription>{topic.difficulty_level}</CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-sm text-gray-600 line-clamp-2">{topic.description}</p>
+                  <Markdown 
+                    content={topic.description}
+                    className="text-sm text-gray-600 line-clamp-2"
+                  />
                 </CardContent>
                 <CardFooter>
                   <Button 
@@ -716,14 +727,75 @@ export default function DashboardPage() {
                 </CardFooter>
               </Card>
             ))}
+
+            {/* Add Course Card */}
+            <Card 
+              className="bg-gradient-to-br from-purple-500 via-pink-500 to-orange-500 hover:shadow-xl transition-all duration-300 cursor-pointer overflow-hidden relative group border-0"
+              onClick={() => router.push('/get-started')}
+            >
+              {/* Animated background effects */}
+              <div className="absolute inset-0 bg-white opacity-0 group-hover:opacity-10 transition-opacity duration-300"></div>
+              <div className="absolute -inset-1 bg-gradient-to-r from-purple-600 via-pink-600 to-orange-600 rounded-xl blur opacity-30 group-hover:opacity-50 transition duration-300"></div>
+
+              {/* Floating particles */}
+              {[...Array(5)].map((_, i) => (
+                <motion.div
+                  key={i}
+                  className="absolute w-2 h-2 bg-white rounded-full opacity-60"
+                  style={{
+                    left: `${20 + i * 15}%`,
+                    top: `${30 + i * 10}%`
+                  }}
+                  animate={{
+                    y: [-10, -20, -10],
+                    x: [0, 5, 0],
+                    opacity: [0.4, 0.7, 0.4]
+                  }}
+                  transition={{
+                    duration: 3 + i * 0.5,
+                    repeat: Infinity,
+                    delay: i * 0.2
+                  }}
+                />
+              ))}
+
+              <div className="relative h-full flex flex-col items-center justify-center p-6 text-white">
+                <motion.div 
+                  className="w-20 h-20 rounded-full bg-white/20 flex items-center justify-center mb-5 backdrop-blur-sm"
+                  animate={{ 
+                    scale: [1, 1.05, 1],
+                    rotate: [0, 5, 0]
+                  }}
+                  transition={{
+                    duration: 3,
+                    repeat: Infinity,
+                    ease: "easeInOut"
+                  }}
+                >
+                  <Sparkles className="w-10 h-10" />
+                </motion.div>
+                <CardTitle className="text-center mb-3 text-2xl font-bold">Add New Course</CardTitle>
+                <Markdown 
+                  content="Create your own personalised learning journey"
+                  className="text-sm text-center text-white/90 mb-6"
+                />
+                <Button 
+                  variant="secondary" 
+                  className="bg-white/20 hover:bg-white/30 text-white border-white/40 backdrop-blur-sm group-hover:scale-105 transition-transform"
+                >
+                  Get Started <ChevronRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </Button>
+              </div>
+            </Card>
           </div>
 
           {/* Skill Tree Section */}
           <div className="mb-8">
             <h2 className="text-2xl font-bold mb-2">Your Learning Tree</h2>
-            <p className="text-gray-600 mb-6">
-              Track your progress and grow your knowledge tree. Complete activities to unlock new skills!
-            </p>
+            <Markdown
+              content="Track your progress and grow your knowledge tree. Complete activities to unlock new skills!"
+              className="text-gray-600 mb-6"
+            />
 
             <SkillTree
               nodes={skillNodes}

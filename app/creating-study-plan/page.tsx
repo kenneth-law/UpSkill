@@ -20,6 +20,8 @@ function StudyPlanContent() {
   const duration = searchParams.get('duration') || '15'
   const masteryDepth = parseInt(searchParams.get('masteryDepth') || '50')
   const studySpan = parseInt(searchParams.get('studySpan') || '30')
+  const courseLength = parseInt(searchParams.get('courseLength') || '30')
+  const ageGroup = searchParams.get('ageGroup') || '13-16'
   const extractedText = searchParams.get('extractedText') || ''
   const textSource = searchParams.get('textSource') || ''
 
@@ -101,6 +103,8 @@ function StudyPlanContent() {
         duration,
         masteryDepth,
         studySpan,
+        courseLength,
+        ageGroup,
         hasExtractedText: !!extractedText,
         userId: user.id
       })
@@ -154,6 +158,8 @@ function StudyPlanContent() {
         duration,
         masteryDepth,
         studySpan,
+        courseLength,
+        ageGroup,
         extractedText,
         userId: user?.id // Include the user ID in the request
       };
