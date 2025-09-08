@@ -36,7 +36,8 @@ const supabase = createClient(supabaseUrl, supabaseServiceKey)
 async function validateSupabaseConnection() {
   try {
     // Simple query to check if connection works
-    const { data, error } = await supabase.from('topics').select('id').limit(1);
+    const { data, error } = await supabase.from(
+        'topics').select('id').limit(1);
 
     if (error) {
       console.error('[DEBUG-SERVER] Supabase connection test failed:', error);

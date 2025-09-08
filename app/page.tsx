@@ -345,7 +345,7 @@ export default function Home() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
             </span>
-            <span className="text-sm font-medium">Trusted by <AnimatedCounter end={5} suffix="+" /> students</span>
+            <span className="text-sm font-medium">Trusted by <AnimatedCounter end={76} suffix="+" /> students</span>
           </motion.div>
 
           {/* Main heading with gradient */}
